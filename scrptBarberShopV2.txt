@@ -1,0 +1,253 @@
+Actúa como un ARQUITECTO DE SOFTWARE SENIOR y LEAD FULLSTACK ENGINEER con experiencia real en productos SaaS comerciales para pequeños negocios.
+
+Tu tarea es TRANSFORMAR el código existente de este proyecto (estructura inicial ya generada) en un PRODUCTO COMPLETO, PROFESIONAL y LISTO PARA PRODUCCIÓN, orientado a barberías.
+
+NO generes un proyecto nuevo desde cero.
+DEBES adaptar, completar y profesionalizar el código existente.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DECISIÓN TECNOLÓGICA (NO CAMBIAR)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+El stack está DEFINITIVAMENTE decidido. NO sugieras alternativas.
+
+Frontend + Backend (Fullstack):
+- Next.js (App Router)
+- TypeScript (estricto)
+- TailwindCSS
+
+Backend / Infraestructura:
+- Database: Turso (SQLite distribuido)
+- Auth: Better-Auth
+- Storage: Cloudinary (implementación inicial), preparado para migrar a Cloudflare R2
+- Deploy objetivo: Vercel
+
+Arquitectura:
+- Clean Architecture
+- Hexagonal Architecture (Ports & Adapters)
+- Monolito modular (NO microservicios)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+OBJETIVO DEL SISTEMA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Construir una PLATAFORMA INTEGRAL PARA BARBERÍAS que combine:
+
+1. Administración interna del negocio (privada)
+2. Sitio público con SEO (opcional por plan)
+3. Captación y fidelización de clientes
+
+Debe funcionar para:
+- Barberías con 1 solo barbero
+- Barberías con múltiples barberos y sucursales
+
+El sistema debe ser:
+- Vendible como MVP
+- Escalable a SaaS
+- Económico de operar
+- Fácil de usar para usuarios NO técnicos
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PRINCIPIOS OBLIGATORIOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+- NO acoplar lógica de negocio a proveedores
+- TODA dependencia externa debe ir detrás de interfaces
+- El dominio NO puede depender de:
+  - Next.js
+  - Turso
+  - Better-Auth
+  - Cloudinary
+- Separar claramente:
+  - Dominio
+  - Aplicación
+  - Infraestructura
+  - UI
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MÓDULOS FUNCIONALES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+━━━━━━━━━━
+1. ADMINISTRACIÓN INTERNA (PRIVADO)
+━━━━━━━━━━
+
+Funcionalidades:
+- Gestión de barberías
+- Gestión de sucursales
+- Servicios:
+  - Precio
+  - Duración
+  - Promociones
+- Barberos:
+  - Horarios laborales
+  - Servicios que ofrece
+  - Comisiones
+  - Estado (activo/inactivo)
+- Clientes:
+  - Perfil
+  - Historial de citas
+- Agenda de citas (CRÍTICO):
+  - Vista diaria y semanal
+  - Estados de cita:
+    - Programada
+    - Confirmada
+    - Cancelada
+    - No-show
+    - Completada
+  - Asignación:
+    - Barbero específico
+    - O “cualquiera disponible”
+
+ROLES:
+- Super Admin
+- Dueño / Admin de barbería
+- Barbero
+- Cliente
+
+━━━━━━━━━━
+2. LÓGICA INTELIGENTE DE AGENDA (NO SIMPLIFICAR)
+━━━━━━━━━━
+
+Reglas OBLIGATORIAS:
+
+- Al crear una cita:
+  - Verificar disponibilidad real por horario
+  - Considerar duración del servicio
+  - Considerar buffer entre citas
+
+- Si el cliente elige un barbero específico:
+  - Bloquear si ese barbero ya no tiene cupo
+
+- Si el cliente elige “cualquiera disponible”:
+  - Asignar automáticamente a un barbero activo disponible
+  - Si TODOS los barberos están llenos en ese horario:
+    - BLOQUEAR la cita
+
+- Si el horario está lleno:
+  - Mostrar mensaje tipo tooltip:
+    “Este horario ya no está disponible. Puedes consultarnos por WhatsApp al +505 88888888 por cancelaciones.”
+
+NO permitir sobreagendas bajo ninguna circunstancia.
+
+━━━━━━━━━━
+3. SITIO PÚBLICO (SEO) – OPCIONAL POR PLAN
+━━━━━━━━━━
+
+Debe existir un sitio público ACCESIBLE SIN LOGIN cuando esté activo.
+
+Incluye:
+- Página pública por barbería:
+  - /barberia/[slug]
+- Información:
+  - Descripción
+  - Horarios
+  - Ubicación
+  - Redes sociales
+- Catálogo público de servicios
+- Galería / publicaciones:
+  - Cortes destacados
+  - Promociones
+  - Eventos
+- SEO:
+  - Slugs
+  - Meta tags dinámicos
+  - Contenido indexable (SSR/SSG)
+
+━━━━━━━━━━
+4. INTERACCIÓN DE USUARIOS
+━━━━━━━━━━
+
+Usuarios anónimos:
+- SOLO pueden ver contenido público
+
+Usuarios registrados:
+- Agendar citas
+- Comentar
+- Dejar estrellas (1 a 5)
+
+El dueño/admin puede:
+- Activar o desactivar comentarios
+- Moderar reseñas
+
+━━━━━━━━━━
+5. CONFIGURACIÓN POR PLAN / FEATURE FLAGS
+━━━━━━━━━━
+
+El sistema DEBE permitir activar o desactivar funcionalidades por barbería SIN cambiar código.
+
+Features:
+- Administración interna (siempre activa)
+- Sitio público
+- Reseñas y comentarios
+- Publicaciones / galería
+
+Reglas:
+- Si una feature está desactivada:
+  - No se renderiza
+  - No es accesible por URL
+  - Debe bloquearse por middleware
+
+Implementar mediante:
+- Feature flags por barbería
+- Middleware
+- Validaciones de backend
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SEGURIDAD (OBLIGATORIA)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+- Autenticación con Better-Auth
+- Middleware de protección por rol
+- RBAC
+- Validación estricta de inputs
+- Separación clara:
+  - API pública (solo lectura)
+  - API privada (CRUD, agenda, admin)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ENTREGABLES ESPERADOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Debes producir:
+
+- Estructura de carpetas profesional
+- Modelo de datos completo (Turso)
+- Interfaces (ports) para:
+  - Auth
+  - Database
+  - Storage
+- Implementaciones concretas para:
+  - Turso
+  - Better-Auth
+  - Cloudinary
+- Manual de implementación y configuración:
+  - Auth
+  - DB
+  - Storage
+- Ejemplos de código reales:
+  - Agenda
+  - Middleware
+  - Feature flags
+  - Página pública
+- Limpieza total de cualquier referencia a:
+  - Emergent
+  - Nombres temporales
+  - URLs de ejemplo
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+OBJETIVO FINAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+El resultado debe ser un PRODUCTO REAL:
+- Vendible a barberías
+- Fácil de mantener
+- Económico
+- Escalable
+- Profesional
+
+NO entregues prototipo.
+NO entregues demo.
+NO entregues código incompleto.
+
+Este sistema debe poder usarse en producción.

@@ -1,0 +1,28 @@
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MIGRACIÓN OBLIGATORIA DEL FRONTEND
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+IMPORTANTE:
+El frontend actual del proyecto fue generado originalmente en React (SPA).
+
+Tu tarea NO es mantener React puro.
+Tu tarea ES MIGRAR completamente el frontend a Next.js (App Router), manteniendo:
+- La lógica existente
+- Los componentes reutilizables
+- Los estilos con TailwindCSS
+
+Reglas de migración:
+- Eliminar React Router y usar el sistema de rutas de Next.js
+- Implementar:
+  - Server Components cuando sea posible
+  - Client Components solo cuando sea necesario
+- Adaptar el data fetching a Next.js
+- Preparar el sitio público para SSR/SSG
+- Integrar middleware de Next.js para:
+  - Auth
+  - Roles
+  - Feature flags
+
+NO dejes partes en React aisladas.
+NO mezcles SPA + Next.js.
+El resultado final debe ser un proyecto 100% Next.js.

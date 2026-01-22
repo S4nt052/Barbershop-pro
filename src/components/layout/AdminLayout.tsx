@@ -1,5 +1,6 @@
 import React from 'react'
 import { Sidebar } from './Sidebar'
+import { Building } from 'lucide-react'
 
 export default function AdminLayout({
     children,
@@ -18,8 +19,9 @@ export default function AdminLayout({
             {/* Main Content Area */}
             <div className="flex flex-col flex-1 overflow-hidden">
                 <header className="bg-white border-b lg:hidden px-4 py-3 flex items-center justify-between">
-                    <h1 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                        BarberShop SaaS
+                    <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                        <Building className="w-5 h-5 text-indigo-600" />
+                        Admin
                     </h1>
                     {/* Mobile Menu Button would go here */}
                 </header>

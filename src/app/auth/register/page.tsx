@@ -17,7 +17,6 @@ export default function RegisterPage() {
     const [error, setError] = useState<string | null>(null)
     const [formData, setFormData] = useState({
         name: '',
-        shopName: '',
         email: '',
         phone: '',
         password: ''
@@ -42,27 +41,8 @@ export default function RegisterPage() {
                 return
             }
 
-            // Create the Barbershop record for the owner
-            const slug = formData.shopName.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '')
-
-            const shopResponse = await fetch('/api/barbershops', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: formData.shopName,
-                    slug: slug
-                })
-            })
-
-            if (!shopResponse.ok) {
-                const errorData = await shopResponse.json()
-                setError(errorData.error || 'Usuario creado pero falló la creación de la barbería')
-                setLoading(false)
-                return
-            }
-
-            console.log('User and Barbershop created successfully')
-            router.push('/admin')
+            console.log('User registered successfully')
+            router.push('/')
 
         } catch (err: any) {
             setError(err.message || 'Ocurrió un error inesperado')
@@ -86,7 +66,7 @@ export default function RegisterPage() {
                     <CardHeader className="space-y-1 text-center">
                         <CardTitle className="text-2xl font-bold">Crea tu cuenta</CardTitle>
                         <CardDescription>
-                            Comienza a gestionar tu barbería de manera profesional
+                            Únete a nuestra plataforma y gestiona tus citas fácilmente.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -98,7 +78,7 @@ export default function RegisterPage() {
                         )}
 
                         <form onSubmit={handleSubmit} className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="name">Nombre Completo</Label>
                                     <div className="relative">
@@ -109,21 +89,7 @@ export default function RegisterPage() {
                                             className="pl-10"
                                             required
                                             value={formData.name}
-                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="shop_name">Nombre de la Barbería</Label>
-                                    <div className="relative">
-                                        <Building className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                                        <Input
-                                            id="shop_name"
-                                            placeholder="Legendary Cuts"
-                                            className="pl-10"
-                                            required
-                                            value={formData.shopName}
-                                            onChange={(e) => setFormData({ ...formData, shopName: e.target.value })}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, name: e.target.value })}
                                         />
                                     </div>
                                 </div>
@@ -140,7 +106,7 @@ export default function RegisterPage() {
                                         className="pl-10"
                                         required
                                         value={formData.email}
-                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, email: e.target.value })}
                                     />
                                 </div>
                             </div>
@@ -156,7 +122,7 @@ export default function RegisterPage() {
                                         className="pl-10"
                                         required
                                         value={formData.phone}
-                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, phone: e.target.value })}
                                     />
                                 </div>
                             </div>
@@ -171,13 +137,13 @@ export default function RegisterPage() {
                                         className="pl-10"
                                         required
                                         value={formData.password}
-                                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, password: e.target.value })}
                                     />
                                 </div>
                             </div>
 
-                            <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 mt-4" disabled={loading}>
-                                {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : "Registrar Mi Barbería"}
+                            <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 mt-4 h-12 text-base font-bold" disabled={loading}>
+                                {loading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : "Crear mi Cuenta"}
                             </Button>
                         </form>
                     </CardContent>

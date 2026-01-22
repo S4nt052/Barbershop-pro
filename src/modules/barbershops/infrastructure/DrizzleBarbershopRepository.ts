@@ -25,6 +25,16 @@ export class DrizzleBarbershopRepository implements BarbershopRepository {
     };
   }
 
+  async getByOwnerId(ownerId: string): Promise<Barbershop | null> {
+    const [result] = await db.select().from(barbershops).where(eq(barbershops.ownerId, ownerId));
+    if (!result) return null;
+    
+    return {
+      ...result,
+      settings: result.settings as any,
+    };
+  }
+
   async save(barbershop: Barbershop): Promise<void> {
     await db.insert(barbershops).values({
       ...barbershop,

@@ -1,9 +1,16 @@
+'use client'
+
 import React from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Scissors, Calendar, BarChart3, Star, CheckCircle } from 'lucide-react'
+import { Scissors, Calendar, BarChart3, Star, CheckCircle, User as UserIcon } from 'lucide-react'
+import { authClient } from '@/lib/auth-client'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
 
 export default function LandingPage() {
+  const { data: session } = authClient.useSession()
+
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
@@ -16,12 +23,32 @@ export default function LandingPage() {
             </span>
           </div>
           <div className="flex gap-4">
-            <Link href="/auth/login">
-              <Button variant="ghost">Iniciar Sesión</Button>
-            </Link>
-            <Link href="/auth/register">
-              <Button className="bg-indigo-600 hover:bg-indigo-700">Registrar Mi Barbería</Button>
-            </Link>
+            {session ? (
+              <div className="flex items-center gap-4">
+                <div className="hidden sm:flex flex-col items-end">
+                  <span className="text-sm font-bold text-gray-900">{session.user.name}</span>
+                  <Badge variant="outline" className="text-[10px] h-4 uppercase">{session.user.role?.replace('_', ' ')}</Badge>
+                </div>
+                <Avatar className="h-8 w-8 border border-indigo-100">
+                  <AvatarImage src={session.user.image || ''} />
+                  <AvatarFallback className="bg-indigo-50 text-indigo-700 text-xs">
+                    {session.user.name?.substring(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <Link href="/admin">
+                  <Button className="bg-indigo-600 hover:bg-indigo-700">Ir al Panel</Button>
+                </Link>
+              </div>
+            ) : (
+              <>
+                <Link href="/auth/login">
+                  <Button variant="ghost">Iniciar Sesión</Button>
+                </Link>
+                <Link href="/auth/register">
+                  <Button className="bg-indigo-600 hover:bg-indigo-700">Crear mi Cuenta</Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </nav>
@@ -38,12 +65,16 @@ export default function LandingPage() {
               marketing automático y fidelización de clientes en un solo lugar.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="text-lg px-8 py-6 bg-indigo-600 hover:bg-indigo-700 h-auto">
-                Empezar Prueba Gratuita
-              </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8 py-6 h-auto">
-                Ver Demo Pública
-              </Button>
+              <Link href={session ? "/admin" : "/auth/register"}>
+                <Button size="lg" className="text-lg px-8 py-6 bg-indigo-600 hover:bg-indigo-700 h-auto w-full sm:w-auto">
+                  {session ? "Volver a Administración" : "Empezar Prueba Gratuita"}
+                </Button>
+              </Link>
+              <Link href="/public">
+                <Button size="lg" variant="outline" className="text-lg px-8 py-6 h-auto w-full sm:w-auto">
+                  Ver Demo Pública
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

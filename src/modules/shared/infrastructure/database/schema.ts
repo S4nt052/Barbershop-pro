@@ -66,6 +66,7 @@ export const barbershops = sqliteTable('barbershops', {
   address: text('address'),
   phone: text('phone'),
   email: text('email'),
+  bannerUrl: text('banner_url'),
   settings: text('settings', { mode: 'json' }).$default(() => ({
     show_public_site: true,
     allow_reviews: true,
@@ -98,6 +99,7 @@ export const services = sqliteTable('services', {
   isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
   promoPrice: real('promo_price'),
   category: text('category').default('general'),
+  imageUrl: text('image_url'),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
 });
@@ -142,6 +144,7 @@ export const reviews = sqliteTable('reviews', {
   userId: text('user_id').notNull().references(() => users.id),
   rating: integer('rating').notNull(),
   comment: text('comment'),
+  imageUrl: text('image_url'),
   isApproved: integer('is_approved', { mode: 'boolean' }).notNull().default(false),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),

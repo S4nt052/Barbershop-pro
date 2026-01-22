@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { getSession } from 'better-auth/next-server';
+import { auth } from '@/modules/users/infrastructure/auth';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -12,7 +12,7 @@ export async function middleware(request: NextRequest) {
 
   // 2. Protect Admin routes
   if (pathname.startsWith('/admin')) {
-    const session = await getSession(request);
+    const session = await auth.api.getSession({ headers: request.headers });
     
     if (!session) {
       return NextResponse.redirect(new URL('/auth/login', request.url));

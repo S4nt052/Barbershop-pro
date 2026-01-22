@@ -1,0 +1,176 @@
+PROMPT CLARO Y ESTRICTO PARA LA AI
+
+PROMPT:
+
+Actúa como un ingeniero senior responsable de corregir y finalizar un producto en etapa MVP.
+Debes aplicar únicamente los cambios solicitados abajo, respetando estrictamente las reglas indicadas.
+No inventes flujos nuevos, no cambies decisiones previas y no ignores instrucciones ya acordadas.
+
+─────────────────────────────
+REGLAS GENERALES (OBLIGATORIAS)
+─────────────────────────────
+
+No modifiques contenido existente en archivos SQL.
+
+No elimines código funcional.
+
+Si un cambio afecta base de datos:
+
+Si la tabla ya existe → usar ALTER TABLE
+
+Si la tabla no existe → agregar el CREATE TABLE al final del archivo DATABASE_SCHEMA.sql
+
+Nunca sobrescribas ni reestructures DATABASE_SCHEMA.sql; solo puedes agregar líneas nuevas.
+
+Todo cambio debe ser consistente con roles y permisos previamente definidos.
+
+─────────────────────────────
+CAMBIOS A REALIZAR (OBLIGATORIOS)
+─────────────────────────────
+
+1️⃣ SERVICIOS – BOTONES DUPLICADOS Y CAMPOS DE IMAGEN
+
+En el módulo de Servicios existen 3 botones de “Crear nuevo”.
+
+Debe existir solo uno.
+
+Se agregaron campos de imagen a varios catálogos sin seguir las reglas acordadas.
+
+Corrige esto generando:
+
+Scripts ALTER TABLE si las tablas ya existen
+
+CREATE TABLE solo si no existen
+
+Todos los scripts deben agregarse correctamente en DATABASE_SCHEMA.sql sin modificar contenido previo.
+
+2️⃣ MODAL DE EDITAR SERVICIOS (UI BUG)
+
+El modal de edición de servicios se desborda por los bordes superior e inferior.
+
+Corrige el problema:
+
+Asegura scroll interno
+
+Mantén el modal centrado
+
+Evita overflow fuera del viewport
+
+3️⃣ ROLES Y REGISTRO DE USUARIOS (FLUJO INCORRECTO)
+
+Se acordó el siguiente modelo y debe cumplirse estrictamente:
+
+ROLES Y CREACIÓN:
+
+Super Admin:
+
+Crea negocios / barberías
+
+Asigna uno o más administradores al negocio
+
+Admin (Dueño del negocio):
+
+Puede crear usuarios
+
+Puede modificar roles de usuarios existentes
+
+Clientes:
+
+Se registran solos desde formularios públicos
+
+Siempre nacen con rol CLIENT
+
+❌ Errores actuales que debes corregir:
+
+En el formulario de registro aparece selección cliente / dueño → esto es incorrecto
+
+Al crear un usuario NO se solicita ni se asigna correctamente el rol
+
+✅ Correcciones obligatorias:
+
+El formulario público de registro NO debe permitir elegir rol
+
+Todo usuario que se registre por su cuenta debe crearse como CLIENT
+
+El rol solo puede cambiarlo un Admin o Super Admin
+
+4️⃣ VISUALIZACIÓN DEL ROL DEL USUARIO LOGUEADO
+
+Error crítico persistente:
+
+El sistema NO muestra el rol del usuario logueado
+
+Debes:
+
+Mostrar claramente:
+
+Nombre del usuario
+
+Rol actual (Admin, Barbero, Cliente, etc.)
+
+Esto debe verse:
+
+En el panel administrativo
+
+En cualquier vista donde el usuario esté autenticado
+
+5️⃣ SUPER ADMIN – ACCESO MANUAL
+
+Genera un script INSERT para crear un usuario Super Admin.
+
+El script:
+
+NO debe ejecutarse automáticamente
+
+Debe poder ejecutarse manualmente
+
+Debe quedar documentado
+
+6️⃣ CONTEXTO DE MARCA Y PRESENTACIÓN (CORREGIDO)
+
+El sistema es un SaaS y debe conservar su landing page, marketing y branding principal en el dominio raíz.
+
+Sin embargo, cuando se renderiza contenido perteneciente a un negocio cliente, el sistema debe aplicar el principio:
+
+“La identidad del cliente es protagonista, el SaaS es secundario.”
+
+Implementar separación clara de contextos:
+
+a) Contexto SaaS (Marketing)
+
+Dominio raíz
+
+Landing page
+
+Propaganda del SaaS
+
+Branding completo del SaaS
+
+b) Contexto Cliente – Sitio Público
+
+Rutas públicas del negocio (perfil, catálogo, posts)
+
+Branding del negocio (nombre, colores, imágenes)
+
+El SaaS solo aparece como:
+
+“Powered by …” en footer o sección discreta
+
+c) Contexto Cliente – Panel Privado
+
+Dashboard y administración
+
+Branding del negocio visible
+
+Sin propaganda del SaaS
+
+El sistema debe detectar el contexto por:
+
+Ruta
+
+Negocio asociado
+
+Subdominio o slug
+
+No eliminar la landing del SaaS.
+Ajustar únicamente qué identidad se muestra según el contexto.

@@ -1,5 +1,6 @@
 const nextConfig = {
   output: 'standalone',
+  swcMinify: false, // Better stability on some Windows environments
   images: {
     unoptimized: true,
   },

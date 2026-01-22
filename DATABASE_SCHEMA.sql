@@ -196,3 +196,12 @@ CREATE INDEX idx_appointments_barber_time ON appointments(barber_id, start_time)
 CREATE INDEX idx_appointments_client ON appointments(client_id);
 CREATE INDEX idx_reviews_barbershop ON reviews(barbershop_id);
 CREATE INDEX idx_posts_barbershop ON posts(barbershop_id);
+
+-- ========================================
+-- MODIFICATIONS & SCHEMA UPDATES
+-- ========================================
+
+-- Point 1: Add image fields to services, reviews, and barbershops
+ALTER TABLE services ADD COLUMN image_url TEXT;
+ALTER TABLE reviews ADD COLUMN image_url TEXT;
+ALTER TABLE barbershops ADD COLUMN banner_url TEXT;

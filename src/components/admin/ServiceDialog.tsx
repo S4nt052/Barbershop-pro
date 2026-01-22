@@ -10,37 +10,73 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
 
+import { useRouter } from 'next/navigation'
+import { uploadFile } from '@uploadcare/upload-client'
+import { Image as ImageIcon, Loader2 } from 'lucide-react'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+
 interface ServiceDialogProps {
-    onSave: () => void
+    onSave?: () => void
     barbershopId: string
+    initialData?: any
+    serviceId?: string
 }
 
-export function ServiceDialog({ onSave, barbershopId }: ServiceDialogProps) {
+export function ServiceDialog({ onSave, barbershopId, initialData, serviceId }: ServiceDialogProps) {
+    const router = useRouter()
     const [open, setOpen] = useState(false)
     const [formData, setFormData] = useState({
-        name: '',
-        description: '',
-        price: '',
-        duration: '',
-        category: 'cortes',
-        promo_price: '',
-        is_active: true
+        name: initialData?.name || '',
+        description: initialData?.description || '',
+        price: initialData?.price?.toString() || '',
+        duration: initialData?.durationMinutes?.toString() || '',
+        category: initialData?.category || 'cortes',
+        promo_price: initialData?.promoPrice?.toString() || '',
+        is_active: initialData?.isActive ?? true
     })
+    const [file, setFile] = useState<File | null>(null)
+    const [loading, setLoading] = useState(false)
+    const [previewUrl, setPreviewUrl] = useState<string | null>(initialData?.imageUrl || null)
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const selectedFile = e.target.files[0]
+            setFile(selectedFile)
+            setPreviewUrl(URL.createObjectURL(selectedFile))
+        }
+    }
 
     const handleSubmit = async () => {
+        setLoading(true)
         try {
+            let imageUrl = ''
+
+            if (file) {
+                const publicKey = process.env.NEXT_PUBLIC_UPLOADCARE_PUBLIC_KEY
+                if (publicKey) {
+                    const uploadResult = await uploadFile(file, {
+                        publicKey,
+                        store: 'auto'
+                    })
+                    imageUrl = uploadResult.cdnUrl ? (uploadResult.cdnUrl.endsWith('/') ? uploadResult.cdnUrl : `${uploadResult.cdnUrl}/`) : `https://ucarecdn.com/${uploadResult.uuid}/`
+                }
+            }
+
             await fetch('/api/services', {
-                method: 'POST',
+                method: serviceId ? 'PATCH' : 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     ...formData,
+                    id: serviceId,
                     barbershop_id: barbershopId,
                     price: parseFloat(formData.price),
                     duration: parseInt(formData.duration),
-                    promo_price: formData.promo_price ? parseFloat(formData.promo_price) : null
+                    promo_price: formData.promo_price ? parseFloat(formData.promo_price) : null,
+                    image_url: imageUrl || previewUrl
                 })
             })
-            onSave()
+            if (onSave) onSave()
+            router.refresh()
             setOpen(false)
             setFormData({
                 name: '',
@@ -51,23 +87,33 @@ export function ServiceDialog({ onSave, barbershopId }: ServiceDialogProps) {
                 promo_price: '',
                 is_active: true
             })
+            setFile(null)
+            setPreviewUrl(null)
         } catch (error) {
             console.error('Error creating service:', error)
+        } finally {
+            setLoading(false)
         }
     }
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button className="gap-2">
-                    <Plus className="w-4 h-4" />
-                    Nuevo Servicio
-                </Button>
+                {serviceId ? (
+                    <Button variant="ghost" size="sm">Editar</Button>
+                ) : (
+                    <Button className="gap-2">
+                        <Plus className="w-4 h-4" />
+                        Nuevo Servicio
+                    </Button>
+                )}
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px]">
+            <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>Crear Nuevo Servicio</DialogTitle>
-                    <DialogDescription>Agrega un nuevo servicio a tu catálogo</DialogDescription>
+                    <DialogTitle>{serviceId ? 'Editar Servicio' : 'Crear Nuevo Servicio'}</DialogTitle>
+                    <DialogDescription>
+                        {serviceId ? 'Modifica los detalles del servicio.' : 'Agrega un nuevo servicio a tu catálogo.'}
+                    </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4">
                     <div>
@@ -138,10 +184,31 @@ export function ServiceDialog({ onSave, barbershopId }: ServiceDialogProps) {
                         />
                         <Label>Servicio activo</Label>
                     </div>
+                    <div>
+                        <Label>Imagen del Servicio</Label>
+                        <div className="mt-2 flex items-center gap-4">
+                            <div className="h-16 w-16 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden border">
+                                {previewUrl ? (
+                                    <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
+                                ) : (
+                                    <ImageIcon className="w-8 h-8 text-gray-400" />
+                                )}
+                            </div>
+                            <Input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                className="cursor-pointer"
+                            />
+                        </div>
+                    </div>
                 </div>
                 <DialogFooter>
                     <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
-                    <Button onClick={handleSubmit}>Crear Servicio</Button>
+                    <Button onClick={handleSubmit} disabled={loading}>
+                        {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                        {serviceId ? 'Guardar Cambios' : 'Crear Servicio'}
+                    </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

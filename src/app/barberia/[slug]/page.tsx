@@ -4,10 +4,10 @@ import {
     Star,
     Users,
     Calendar,
-    MapPin,
     Phone,
     Mail,
-    Home
+    Home,
+    Building
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -157,7 +157,21 @@ export default async function PublicBarberShopPage({ params }: PublicPageProps) 
                     </div>
 
                 </div>
+
+                {/* Footer */}
+                <footer className="bg-white border-t py-12">
+                    <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
+                        <div className="flex items-center gap-2">
+                            <Building className="w-5 h-5 text-gray-400" />
+                            <span className="text-gray-900 font-bold">{shop.name}</span>
+                        </div>
+                        <div className="text-center md:text-right">
+                            <p className="text-xs text-gray-400 font-medium tracking-widest uppercase">
+                                Powered by <span className="text-indigo-600 font-bold">BarberShop SaaS</span>
+                            </p>
+                        </div>
+                    </div>
+                </footer>
             </div>
-        </div>
-    )
+            )
 }
